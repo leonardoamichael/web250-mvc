@@ -1,103 +1,42 @@
 <?php
-/**
- * -------------------------------------------------------------------------
- *  WEB250 MVC — Front Controller (with router and subfolder support)
- * -------------------------------------------------------------------------
- *  This is the single entry point for every web request.
- *  It:
- *   • Turns on error reporting for development.
- *   • Loads Composer’s autoloader (so all our classes work automatically).
- *   • Creates a Router and registers routes (URLs → handlers).
- *   • Figures out which route the browser requested.
- *   • Asks the Router to "dispatch" the request (find and run the handler).
- *
- *  NOTE:
- *   - This version works even if your project lives in a subfolder
- *     like /web250-mvc or /projects/mvc-app.
- *   - The goal is to handle routes like "/", "/home", "/about"
- *     cleanly no matter where the app is hosted.
- */
+// public/index.php
+//
+// This is the FRONT CONTROLLER.
+// Every request from the browser comes to this file first.
+// It will:
+// 1. Turn on error reporting (for development).
+// 2. Load the Router and the Controller class.
+// 3. Register routes (which URL -> which action).
+// 4. Ask the router to dispatch the current request.
 
-declare(strict_types=1); // Enforce strict typing for cleaner, safer code.
+declare(strict_types=1);
 
-// -------------------------------------------------------------------------
-// 1. DEVELOPMENT ERROR SETTINGS
-// -------------------------------------------------------------------------
-ini_set('display_errors', '1');          // Display runtime errors.
-ini_set('display_startup_errors', '1');  // Display startup/config errors.
-error_reporting(E_ALL);                  // Report every possible error level.
+// Show errors while we are learning (in production, this should be turned off)
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
 
-// -------------------------------------------------------------------------
-// 2. LOAD COMPOSER AUTOLOADER
-// -------------------------------------------------------------------------
-require __DIR__ . '/../vendor/autoload.php';
+// Load the Router and the SalamanderController class
+require_once __DIR__ . '/../src/Router.php';
+require_once __DIR__ . '/../src/Controllers/SalamanderController.php';
 
-// -------------------------------------------------------------------------
-// 3. IMPORT CLASSES WE'LL USE
-// -------------------------------------------------------------------------
-use Web250\Mvc\Router;
-use Web250\Mvc\Controllers\HomeController;
-
-// -------------------------------------------------------------------------
-// 4. CREATE AND CONFIGURE THE ROUTER
-// -------------------------------------------------------------------------
+// Create a Router instance
 $router = new Router();
 
-/**
- * Route: GET /
- * Handler: HomeController::index()
- */
-$router->get('/', fn() => (new HomeController())->index());
+// Route for "home" using your actual URL path
+$router->get('/web250-mvc/public/', function () {
+    $controller = new SalamanderController();
+    $controller->index();
+});
 
-/**
- * Route: GET /home
- * Handler: same as "/"
- */
-$router->get('/home', fn() => (new HomeController())->index());
+// Route for the salamanders list using your actual URL path
+$router->get('/web250-mvc/public/salamanders', function () {
+    $controller = new SalamanderController();
+    $controller->index();
+});
 
-/**
- * Route: GET /about
- * Handler: simple anonymous function (no controller)
- */
-$router->get('/about', fn() =>
-    '<h1>About</h1><p>This route is handled by a closure.</p>'
-);
+// Figure out which path the user requested, ignoring the query string
+// Example: "/salamanders?page=2" becomes "/salamanders"
+$uriPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// -------------------------------------------------------------------------
-// 5. DETERMINE THE CURRENT REQUEST METHOD AND PATH
-// -------------------------------------------------------------------------
-
-// The HTTP method (GET, POST, etc.)
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
-// The full request URI (example: "/web250-mvc/about?foo=bar")
-// We only want the path part before any "?" query string.
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
-
-// Determine where our public folder sits relative to the domain.
-// Example: if SCRIPT_NAME = "/web250-mvc/public/index.php",
-// then dirname(...) gives "/web250-mvc/public".
-$base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
-
-// Remove that base prefix from the URI so that:
-//    "/web250-mvc/about" → "/about"
-//    "/web250-mvc/"      → "/"
-$path = '/' . ltrim(
-    preg_replace('#^' . preg_quote($base, '#') . '#', '', $uri),
-    '/'
-);
-
-// Occasionally this creates a double slash ("//") when the path was exactly "/"
-// so we normalize it back to a single slash.
-if ($path === '//') {
-    $path = '/';
-}
-
-// -------------------------------------------------------------------------
-// 6. ASK THE ROUTER TO HANDLE THE REQUEST
-// -------------------------------------------------------------------------
-$router->dispatch($method, $path);
-
-// -------------------------------------------------------------------------
-// END OF FILE
-// -------------------------------------------------------------------------
+// Ask the router to handle (dispatch) this request
+$router->dispatch($uriPath, $_SERVER['REQUEST_METHOD']);
