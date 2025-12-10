@@ -1,0 +1,5 @@
+# Ignore environment files with real secrets
+.env
+.env.local
+.env.*
+!.env.example

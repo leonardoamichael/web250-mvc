@@ -18,6 +18,13 @@ error_reporting(E_ALL);
 // Load the Router and the SalamanderController class
 require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Controllers/SalamanderController.php';
+require __DIR__ . '/../vendor/autoload.php';
+use Dotenv\Dotenv;
+use Web250\Mvc\Router;
+
+// Load the Router and the SalamanderController class
+require_once __DIR__ . '/../src/Router.php';
+require_once __DIR__ . '/../src/Controllers/SalamanderController.php';
 
 // Create a Router instance
 $router = new Router();

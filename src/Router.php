@@ -7,7 +7,7 @@
 // 3. Call the appropriate action.
 //
 // It uses "callbacks" (functions) that are saved and run later.
-
+namespace Web250\Mvc;
 class Router
 {
     /**
