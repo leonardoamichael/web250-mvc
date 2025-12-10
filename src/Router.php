@@ -64,8 +64,12 @@ class Router
             return;
         }
 
-        // If we get here, no route matched.
         http_response_code(404);
-        echo '<h1>404 - Page Not Found</h1>';
+echo '<h1>404 - Page Not Found</h1>';
+echo '<pre>';
+echo "Requested Path: " . htmlspecialchars($path) . "\n";
+echo "Registered Routes:\n";
+print_r(array_keys($this->routes[$method] ?? []));
+echo '</pre>';
     }
 }

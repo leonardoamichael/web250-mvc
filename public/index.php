@@ -22,21 +22,37 @@ require_once __DIR__ . '/../src/Controllers/SalamanderController.php';
 // Create a Router instance
 $router = new Router();
 
-// Route for "home" using your actual URL path
-$router->get('/web250-mvc/public/', function () {
+// Home route – when user visits /web250-mvc/public/
+$router->get('/', function () {
     $controller = new SalamanderController();
     $controller->index();
 });
 
-// Route for the salamanders list using your actual URL path
-$router->get('/web250-mvc/public/salamanders', function () {
+// Salamanders list – /web250-mvc/public/salamanders
+$router->get('/salamanders', function () {
     $controller = new SalamanderController();
     $controller->index();
 });
 
-// Figure out which path the user requested, ignoring the query string
-// Example: "/salamanders?page=2" becomes "/salamanders"
+// Figure out the path the user requested (ignore query string)
 $uriPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Ask the router to handle (dispatch) this request
+// Detect the base path from where index.php actually lives.
+// e.g. /web250-mvc/public/index.php -> /web250-mvc/public
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+
+// Strip the base path off the front of the URI if it's there
+if ($basePath !== '' && strpos($uriPath, $basePath) === 0) {
+    $uriPath = substr($uriPath, strlen($basePath));
+}
+
+// Normalize empty path to '/'
+if ($uriPath === '' || $uriPath === false) {
+    $uriPath = '/';
+}
+
+// Optional: debugging
+// echo 'Requested Path: ' . $uriPath;
+
+// Dispatch to the router
 $router->dispatch($uriPath, $_SERVER['REQUEST_METHOD']);
