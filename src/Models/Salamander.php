@@ -29,4 +29,18 @@ class Salamander
         // Fetch all rows as an array of associative arrays
         return $stmt->fetchAll();
     }
+
+    public static function find(int $id): ?array
+{
+    $pdo = Database::getConnection();
+
+    $sql = "SELECT * FROM salamanders WHERE id = :id LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
 }

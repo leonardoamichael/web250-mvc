@@ -18,7 +18,8 @@
     <h1>Salamanders</h1>
 
     <?php foreach ($salamanders as $s): ?>
-        <h2><?= htmlspecialchars($s['name']) ?></h2>
+       <h2> <a href="/web250-mvc/public/salamanders/show?id=<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></a> </h2>
+
 
         <p>
             <strong>Habitat:</strong>

@@ -40,6 +40,11 @@ $router->get('/salamanders', function () {
     $controller->index();
 });
 
+$router->get('/salamanders/show', function () {
+    $controller = new SalamanderController();
+    $controller->show();
+});
+
 // Extra HomeController routes
 $router->get('/home', function () {
     $controller = new HomeController();

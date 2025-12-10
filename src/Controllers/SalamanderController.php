@@ -21,4 +21,25 @@ class SalamanderController
         // can now use the $salamanders variable.
         require __DIR__ . '/../Views/Salamanders/index.php';
     }
+
+    public function show(): void
+{
+    if (!isset($_GET['id'])) {
+        http_response_code(400);
+        echo "Bad Request: id is required.";
+        return;
+    }
+
+    $id = (int) $_GET['id'];
+
+    $salamander = Salamander::find($id);
+
+    if ($salamander === null) {
+        http_response_code(404);
+        echo "Salamander not found.";
+        return;
+    }
+
+    include __DIR__ . '/../Views/Salamanders/show.php';
+}
 }
